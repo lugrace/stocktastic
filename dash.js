@@ -4,11 +4,13 @@ var name = "AAPL"; //boi we gotta find a way to change this part
 //var appleURL = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=AAPL&qopts.columns=date%2Copen&api_key=_xxj62hU6DK8MaazUSh1";
 var appleURL = "https://api.intrinio.com/prices?identifier=" + name;
 var snapURL = "https://api.intrinio.com/prices?identifier=SNAP";
+var fbURL = "https://api.intrinio.com/prices?identifier=FB";
 var baseURL = "https://api.intrinio.com/prices?identifier=";
 var fName, lName;
 var balance;
 var labelsA = [], priceA=[];
-var labelsS =[], priceS=[];
+var labelsS = [], priceS=[];
+var labelsF = [], priceF=[];
 var type;
 
 $(document).ready(function(){
@@ -62,6 +64,21 @@ $.getJSON(balanceURL, function(data) {     //data is the JSON string
           error: function() { alert('boo!'); },
           beforeSend: setHeader
   });
+   $.ajax({ //facebook
+          url: fbURL,
+          type: 'GET',
+          dataType: 'json',
+          success: function(obj){ //labelsA, priceA
+            for(var i = obj.data.length -1; i >=0 ; i-=20){
+              labelsF.push(obj.data[i].date);
+              priceF.push(obj.data[i].open);
+            }
+            console.log("labelsF", labelsF);
+            console.log("priceF", priceF);
+          },
+          error: function() { alert('boo!'); },
+          beforeSend: setHeader
+  });
   function setHeader(xhr) {
         var username = "fbf1ad372855125a7ced3869620b7c8b";
         var password = "8122fa6759fa379baae51ce1b19a7e57";
@@ -73,6 +90,7 @@ $.getJSON(balanceURL, function(data) {     //data is the JSON string
   
   makeChart(labelsA, priceA, 'myChart');
   makeChart(labelsS, priceS, 'myChart2');
+  makeChart(labelsF, priceF, 'myChart3');
  
  
 });
@@ -105,6 +123,22 @@ function ugh2(){
   }
   else{
     document.getElementById("aaplb2").innerHTML = "do not invest";//"Looks like " + name + " is decreasing in value.";
+  }
+}
+
+function ugh3(){
+  console.log("swagg");
+  var riskyness = 5;
+  if(type == "aggressive"){
+    riskyness = 10;
+  }
+  var percent = (priceF[priceF.length - 1] - priceF[priceF.length -2])/priceF[priceF.length -2] * 100;
+  console.log("PERCENT AJDSF ASDF")
+  if (percent > riskyness){
+    document.getElementById("aaplb3").innerHTML = "invest";//"Looks like " + name + " is increasing in value. ";
+  }
+  else{
+    document.getElementById("aaplb3").innerHTML = "do not invest";//"Looks like " + name + " is decreasing in value.";
   }
 }
  //Make Graph
